@@ -1,17 +1,12 @@
 package com.example.userservice.controller;
 
-import com.example.userservice.dto.LogOutRequestDTO;
-import com.example.userservice.dto.LoginRequestDTO;
-import com.example.userservice.dto.SingUpRequestDTO;
-import com.example.userservice.dto.UserDTO;
+import com.example.userservice.dto.*;
 import com.example.userservice.models.Token;
 import com.example.userservice.models.User;
 import com.example.userservice.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -30,12 +25,24 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Token logIn(LoginRequestDTO loginRequestDTO){
-        return  null;
+    public LoginResponseDTO logIn(@RequestBody LoginRequestDTO loginRequestDTO){
+        Token token = userService.logIn(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+        loginResponseDTO.setToken(token);
+        return loginResponseDTO;
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> LogOut(LogOutRequestDTO logOutRequestDTO){
-        return  null;
+    public ResponseEntity<Void> LogOut(@RequestBody  LogOutRequestDTO logOutRequestDTO){
+        userService.logOut(logOutRequestDTO.getToken());
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
+
+
+    @GetMapping("/validate/{token}")
+    public UserDTO validateToken(@PathVariable String token){
+        User user = userService.validateToken(token);
+       return UserDTO.from(user);
+    }
+
 }
