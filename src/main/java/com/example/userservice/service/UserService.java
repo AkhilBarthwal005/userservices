@@ -2,6 +2,7 @@ package com.example.userservice.service;
 
 import com.example.userservice.exception.InvalidPasswordException;
 import com.example.userservice.exception.InvalidTokenException;
+import com.example.userservice.models.Role;
 import com.example.userservice.models.Token;
 import com.example.userservice.models.User;
 import com.example.userservice.repository.TokenRepository;
