@@ -45,4 +45,10 @@ public class UserController {
        return UserDTO.from(user);
     }
 
+    @GetMapping("/{id}")
+    public String getUserById(@PathVariable Long id){
+        System.out.println("User with id "+id+" is found.");
+        return "User with id "+id+" is found.";
+    }
+
 }

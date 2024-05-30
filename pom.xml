@@ -74,6 +74,25 @@
             <artifactId>spring-boot-starter-oauth2-authorization-server</artifactId>
         </dependency>
 
+        <!--        eureka client -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-core</artifactId>-->
+<!--            <version>10.11.0</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-mysql</artifactId>-->
+<!--            <version>10.11.0</version>-->
+<!--        </dependency>-->
+
 
 
     </dependencies>
