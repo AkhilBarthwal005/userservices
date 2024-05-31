@@ -4,6 +4,7 @@ import com.example.userservice.dto.*;
 import com.example.userservice.models.Token;
 import com.example.userservice.models.User;
 import com.example.userservice.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public UserDTO signUp(@RequestBody SingUpRequestDTO singUpRequestDTO){
+    public UserDTO signUp(@RequestBody SingUpRequestDTO singUpRequestDTO) throws JsonProcessingException {
         User user = userService.signUp(singUpRequestDTO.getEmail(), singUpRequestDTO.getPassword(), singUpRequestDTO.getUsername());
         return UserDTO.from(user);
     }

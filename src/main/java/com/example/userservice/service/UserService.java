@@ -1,5 +1,7 @@
 package com.example.userservice.service;
 
+import com.example.userservice.config.KafkaProducerClient;
+import com.example.userservice.dto.SendEmailDTO;
 import com.example.userservice.exception.InvalidPasswordException;
 import com.example.userservice.exception.InvalidTokenException;
 import com.example.userservice.models.Role;
@@ -7,6 +9,8 @@ import com.example.userservice.models.Token;
 import com.example.userservice.models.User;
 import com.example.userservice.repository.TokenRepository;
 import com.example.userservice.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,13 +31,19 @@ public class UserService {
 
     private TokenRepository tokenRepository;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, TokenRepository tokenRepository) {
+    private KafkaProducerClient kafkaProducerClient;
+
+    private ObjectMapper objectMapper;  // we use this to convert object to json string and vice versa this process is called serialization and deserialization
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, TokenRepository tokenRepository, KafkaProducerClient kafkaProducerClient, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
+        this.kafkaProducerClient = kafkaProducerClient;
+        this.objectMapper = objectMapper;
     }
 
-    public User signUp(String email , String password , String username){
+    public User signUp(String email , String password , String username) throws JsonProcessingException {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isPresent()){
             // user is already there in the DB.
@@ -43,6 +53,14 @@ public class UserService {
         newUser.setEmail(email);
         newUser.setUsername(username);
         newUser.setPassword(passwordEncoder.encode(password));
+        // we will send a message to kafka to send a welcome email to the users email
+        SendEmailDTO sendEmailDTO = new SendEmailDTO();
+        sendEmailDTO.setTo(email);
+        sendEmailDTO.setFrom("akhil.barthwal005@gamil.com");
+        sendEmailDTO.setSubject("Welcome to our platform");
+        sendEmailDTO.setBody("Welcome to our platform, we are glad to have you here");
+
+        kafkaProducerClient.sendEvent("sendEmail",objectMapper.writeValueAsString(sendEmailDTO));
         return userRepository.save(newUser);
     }
 
